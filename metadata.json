@@ -1,0 +1,7 @@
+{
+  "name": "$$ App",
+  "description": "A sophisticated home budget dashboard with AI-powered financial coaching, automatic receipt scanning, and detailed financial flow analytics.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
