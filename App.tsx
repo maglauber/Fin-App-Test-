@@ -10,7 +10,10 @@ import {
   ChevronRightIcon,
   CalendarIcon,
   ArrowPathIcon,
-  ArrowsRightLeftIcon
+  ArrowsRightLeftIcon,
+  BeakerIcon,
+  ArrowDownTrayIcon,
+  ArrowUpTrayIcon
 } from '@heroicons/react/24/outline';
 import { Transaction, BudgetSettings, MonthSummary, RecurringTransaction } from './types.js';
 import { INITIAL_SETTINGS } from './constants.js';
@@ -193,6 +196,101 @@ const App: React.FC = () => {
     setEditingTransaction(null);
   };
 
+  const handleResetData = () => {
+    if (window.confirm("Are you sure you want to delete all your transactions, recurring templates, and settings? This cannot be undone.")) {
+      setTransactions([]);
+      setRecurringTemplates([]);
+      setSettings(INITIAL_SETTINGS);
+      localStorage.removeItem('zen_transactions');
+      localStorage.removeItem('zen_settings');
+      localStorage.removeItem('zen_recurring');
+    }
+  };
+
+  const handleLoadTestData = () => {
+    if (window.confirm("This will overwrite your current data with test data. Proceed?")) {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const monthStr = currentDate.toISOString().slice(0, 7);
+      
+      const testData: Transaction[] = [
+        { id: generateId(), name: 'TechCorp Salary', amount: 5200, category: 'Salary', account: 'Checking', type: 'income', date: new Date(year, month, 1).toISOString().split('T')[0], budgetMonth: monthStr, isRecurring: true },
+        { id: generateId(), name: 'Apartment Rent', amount: 1500, category: 'Rent', account: 'Checking', type: 'expense', date: new Date(year, month, 2).toISOString().split('T')[0], budgetMonth: monthStr, isRecurring: true },
+        { id: generateId(), name: 'Whole Foods', amount: 185.50, category: 'Food', subCategory: 'Groceries', account: 'Credit Card', type: 'expense', date: new Date(year, month, 3).toISOString().split('T')[0], budgetMonth: monthStr },
+        { id: generateId(), name: 'Electric Bill', amount: 120, category: 'Utilities', subCategory: 'Electricity', account: 'Checking', type: 'expense', date: new Date(year, month, 5).toISOString().split('T')[0], budgetMonth: monthStr, isRecurring: true },
+        { id: generateId(), name: 'Internet', amount: 80, category: 'Utilities', subCategory: 'Internet', account: 'Credit Card', type: 'expense', date: new Date(year, month, 7).toISOString().split('T')[0], budgetMonth: monthStr, isRecurring: true },
+        { id: generateId(), name: 'Gas Station', amount: 45, category: 'Transport', subCategory: 'Gas', account: 'Credit Card', type: 'expense', date: new Date(year, month, 8).toISOString().split('T')[0], budgetMonth: monthStr },
+        { id: generateId(), name: 'Netflix', amount: 15.99, category: 'Entertainment', subCategory: 'Subscriptions', account: 'Credit Card', type: 'expense', date: new Date(year, month, 10).toISOString().split('T')[0], budgetMonth: monthStr, isRecurring: true },
+        { id: generateId(), name: 'Freelance Client', amount: 850, category: 'Freelance', account: 'Checking', type: 'income', date: new Date(year, month, 12).toISOString().split('T')[0], budgetMonth: monthStr },
+        { id: generateId(), name: 'Trader Joe\'s', amount: 120.25, category: 'Food', subCategory: 'Groceries', account: 'Credit Card', type: 'expense', date: new Date(year, month, 14).toISOString().split('T')[0], budgetMonth: monthStr },
+        { id: generateId(), name: 'Sushi Restaurant', amount: 75, category: 'Food', subCategory: 'Dining Out', account: 'Credit Card', type: 'expense', date: new Date(year, month, 15).toISOString().split('T')[0], budgetMonth: monthStr },
+        { id: generateId(), name: 'Gym Membership', amount: 50, category: 'Health', subCategory: 'Fitness', account: 'Credit Card', type: 'expense', date: new Date(year, month, 16).toISOString().split('T')[0], budgetMonth: monthStr, isRecurring: true },
+        { id: generateId(), name: 'Amazon Shopping', amount: 65.40, category: 'Shopping', subCategory: 'Home', account: 'Credit Card', type: 'expense', date: new Date(year, month, 18).toISOString().split('T')[0], budgetMonth: monthStr },
+        { id: generateId(), name: 'Coffee Shop', amount: 5.50, category: 'Food', subCategory: 'Snacks', account: 'Cash', type: 'expense', date: new Date(year, month, 19).toISOString().split('T')[0], budgetMonth: monthStr },
+        { id: generateId(), name: 'Pharmacy', amount: 25, category: 'Health', subCategory: 'Pharmacy', account: 'Credit Card', type: 'expense', date: new Date(year, month, 22).toISOString().split('T')[0], budgetMonth: monthStr },
+        { id: generateId(), name: 'Uber', amount: 18.50, category: 'Transport', subCategory: 'Public Transport', account: 'Credit Card', type: 'expense', date: new Date(year, month, 24).toISOString().split('T')[0], budgetMonth: monthStr },
+        { id: generateId(), name: 'Movie Theater', amount: 35, category: 'Entertainment', subCategory: 'Movies', account: 'Credit Card', type: 'expense', date: new Date(year, month, 26).toISOString().split('T')[0], budgetMonth: monthStr },
+        { id: generateId(), name: 'Refund Amazon', amount: 65.40, category: 'Shopping', subCategory: 'Home', account: 'Credit Card', type: 'return', date: new Date(year, month, 27).toISOString().split('T')[0], budgetMonth: monthStr }
+      ];
+
+      const testRecurring: RecurringTransaction[] = [
+        { id: generateId(), name: 'TechCorp Salary', amount: 5200, category: 'Salary', account: 'Checking', type: 'income', dayOfMonth: 1, frequency: 'monthly' },
+        { id: generateId(), name: 'Apartment Rent', amount: 1500, category: 'Rent', account: 'Checking', type: 'expense', dayOfMonth: 2, frequency: 'monthly' },
+        { id: generateId(), name: 'Electric Bill', amount: 120, category: 'Utilities', account: 'Checking', type: 'expense', dayOfMonth: 5, frequency: 'monthly' },
+        { id: generateId(), name: 'Internet', amount: 80, category: 'Utilities', account: 'Credit Card', type: 'expense', dayOfMonth: 7, frequency: 'monthly' },
+        { id: generateId(), name: 'Netflix', amount: 15.99, category: 'Entertainment', account: 'Credit Card', type: 'expense', dayOfMonth: 10, frequency: 'monthly' },
+        { id: generateId(), name: 'Gym Membership', amount: 50, category: 'Health', account: 'Credit Card', type: 'expense', dayOfMonth: 16, frequency: 'monthly' }
+      ];
+
+      setTransactions(testData);
+      setRecurringTemplates(testRecurring);
+      setSettings(INITIAL_SETTINGS);
+    }
+  };
+
+  const handleExportData = () => {
+    const data = {
+      transactions,
+      settings,
+      recurringTemplates
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `zenbudget-backup-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportData = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string);
+        if (data.transactions && data.settings) {
+          setTransactions(data.transactions);
+          setSettings(data.settings);
+          if (data.recurringTemplates) {
+            setRecurringTemplates(data.recurringTemplates);
+          }
+          alert("Data imported successfully!");
+        } else {
+          alert("Invalid backup file format.");
+        }
+      } catch (error) {
+        alert("Error reading backup file.");
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  };
+
   const runAnalysis = async () => {
     setIsAnalyzing(true);
     setShowAnalysis(true);
@@ -255,6 +353,41 @@ const App: React.FC = () => {
               {pendingRecurringCount > 0 && (
                 <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white"></span>
               )}
+            </button>
+            <button 
+              onClick={handleLoadTestData}
+              className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors"
+              title="Load Test Data"
+            >
+              <BeakerIcon className="h-6 w-6" />
+            </button>
+            <button 
+              onClick={handleExportData}
+              className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors"
+              title="Export Data"
+            >
+              <ArrowDownTrayIcon className="h-6 w-6" />
+            </button>
+            <label 
+              className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
+              title="Import Data"
+            >
+              <ArrowUpTrayIcon className="h-6 w-6" />
+              <input 
+                type="file" 
+                accept=".json" 
+                className="hidden" 
+                onChange={handleImportData} 
+              />
+            </label>
+            <button 
+              onClick={handleResetData}
+              className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors"
+              title="Reset All Data"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+              </svg>
             </button>
             <button 
               onClick={() => setShowSettings(true)}
